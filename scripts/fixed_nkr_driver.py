@@ -8,7 +8,7 @@ from std_msgs.msg import String
 
 
 ser = serial.Serial(
-	port='/dev/ttyUSB0',
+	port='/dev/ttyUSB1',
 	baudrate = 115200,
 	parity = serial.PARITY_NONE,
 	stopbits = serial.STOPBITS_ONE,
@@ -41,17 +41,17 @@ def keyboard_callback(data):
             anr3 = anr3-5
             anr4 = anr4-5
     if data.data=="l":
-        turn =  turn + 1000
-        if turn > 7000:
-            turn = 7000
+        turn =  turn + 5
+        if turn > 30:
+            turn = 30
         #anr1 = anr1-5
         #anr2 = anr2+5
         #anr3 = anr3-5
        # anr4 = anr4+5
     if data.data=="r":
-        turn =  turn - 1000
-        if turn  < -7000:
-            turn = -7000
+        turn =  turn - 5
+        if turn  < -30:
+            turn = -30
         #anr1 = anr1+5
         #anr2 = anr2-5
         #anr3 = anr3+5
