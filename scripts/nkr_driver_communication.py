@@ -26,13 +26,13 @@ stop = 0
 def keyboard_callback(data):
     global anr1, anr2, anr3, anr4, turn, stop
     if data.data=="f":
-        if anr1 <150:
+        if anr1 <100:
             anr1 = anr1+5
             anr2 = anr2+5
             anr3 = anr3+5
             anr4 = anr4+5
     if data.data=="b":
-        if anr1>-150:
+        if anr1>-100:
             anr1 = anr1-5
             anr2 = anr2-5
             anr3 = anr3-5

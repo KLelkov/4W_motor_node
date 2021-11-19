@@ -25,8 +25,9 @@ stop = 0
 
 def keyboard_callback(data):
     global anr1, anr2, anr3, anr4, turn, stop
+    calibration_needed = False
     if data.data=="f":
-        if anr1 <150:
+        if anr1 <100:
             stop = 0
             #turn = 0
             anr1 = anr1+5
@@ -34,8 +35,9 @@ def keyboard_callback(data):
             anr3 = anr3+5
             anr4 = anr4+5
     if data.data=="b":
-        turn = 0
-        if anr1>-150:
+        #turn = 0
+        if anr1>-100:
+            stop = 0
             anr1 = anr1-5
             anr2 = anr2-5
             anr3 = anr3-5
@@ -56,14 +58,25 @@ def keyboard_callback(data):
         #anr2 = anr2-5
         #anr3 = anr3+5
         #anr4 = anr4-5
-
     if data.data=="s":
         stop = 1
         anr1 = 0
         anr2 = 0
         anr3 = 0
         anr4 = 0
+    if data.data=="o":
+        stop = 1
+        anr1 = 0
+        anr2 = 0
+        anr3 = 0
+        anr4 = 0
+        calibration_needed = True
+
     send_to_stm32()
+    # The idea is to send stop command before calibration begins
+    if calibration_needed:
+        ser.write("[cal] \n")
+    	print('sent rotation angles calibration command\n')
 
 def send_to_stm32():
 	global anr1, anr2, anr3, anr4, turn, stop
