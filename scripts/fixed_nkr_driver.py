@@ -42,7 +42,7 @@ def keyboard_callback(data):
             anr2 = anr2-5
             anr3 = anr3-5
             anr4 = anr4-5
-    if data.data=="l":
+    if data.data=="r":
         turn =  turn + 5
         if turn > 30:
             turn = 30
@@ -50,7 +50,7 @@ def keyboard_callback(data):
         #anr2 = anr2+5
         #anr3 = anr3-5
        # anr4 = anr4+5
-    if data.data=="r":
+    if data.data=="l":
         turn =  turn - 5
         if turn  < -30:
             turn = -30
@@ -66,6 +66,7 @@ def keyboard_callback(data):
         anr4 = 0
     if data.data=="o":
         stop = 1
+        turn = 0
         anr1 = 0
         anr2 = 0
         anr3 = 0
@@ -75,6 +76,7 @@ def keyboard_callback(data):
     send_to_stm32()
     # The idea is to send stop command before calibration begins
     if calibration_needed:
+        time.sleep(1)
         ser.write("[cal] \n")
     	print('sent rotation angles calibration command\n')
 
