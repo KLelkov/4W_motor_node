@@ -9,7 +9,7 @@ from rdk_msgs.msg import motors
 
 
 ser = serial.Serial(
-	port='/dev/ttyUSB1',
+	port='/dev/stm',
 	baudrate = 115200,
 	parity = serial.PARITY_NONE,
 	stopbits = serial.STOPBITS_ONE,
@@ -69,16 +69,16 @@ def communicator():
     global anr1, anr2, anr3, anr4, turn, stop, calibration_needed
     rospy.init_node('nkr_driver_communication', anonymous=True)
     rospy.Subscriber('keyboard_commands', String, keyboard_callback)
-    odo_pub = rospy.Publisher('motors_data', motors, queue_size=1)
+    odo_pub = rospy.Publisher('motors_data', motors, queue_size=3)
     rate = rospy.Rate(8)
 
     while not rospy.is_shutdown():
         ser.write("[drv] {} {} {} {} {} {}\n".format(anr1, anr2, anr3, anr4, turn, int(stop)))
         incLine = ser.readline()
-        arr = incline.split(' ')
+        arr = incLine.split(' ')
         if (arr[0] == "[enc]"):
             msg = motors()
-            msg.timestamp = rospy.Time.now()
+            #msg.timestamp = rospy.Time.now()
             msg.odo[0] = float(arr[1])
             msg.odo[1] = float(arr[2])
             msg.odoRear[0] = float(arr[3])
