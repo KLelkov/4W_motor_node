@@ -78,7 +78,7 @@ def communicator():
     global anr1, anr2, anr3, anr4, turn, stop, calibration_needed
     rospy.init_node('nkr_driver_communication', anonymous=True)
     rospy.Subscriber('keyboard_commands', String, keyboard_callback)
-    rate = rospy.Rate(5)
+    rate = rospy.Rate(8)
 
     while not rospy.is_shutdown():
         ser.write("[drv] {} {} {} {} {} {}\n".format(anr1, anr2, anr3, anr4, turn, int(stop)))
@@ -90,6 +90,7 @@ def communicator():
             print('sending rotation angles calibration command\n')
             time.sleep(1)
             ser.write("[cal] \n")
+            calibration_needed = False
 
         rate.sleep()
 
