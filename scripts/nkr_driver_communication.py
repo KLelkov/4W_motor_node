@@ -5,6 +5,7 @@ import math
 import time
 import serial # used to exchange data with arduino controller
 from std_msgs.msg import String
+from rdk_msgs.msg import motors
 
 
 ser = serial.Serial(
@@ -43,18 +44,10 @@ def keyboard_callback(data):
         turn =  turn - 5
         if turn  < -30:
             turn = -30
-        #anr1 = anr1-5
-        #anr2 = anr2+5
-        #anr3 = anr3-5
-        #anr4 = anr4+5
     if data.data=="r":
         turn =  turn + 5
         if turn > 30:
             turn = 30
-        #anr1 = anr1+5
-        #anr2 = anr2-5
-        #anr3 = anr3+5
-        #anr4 = anr4-5
 
     if data.data=="s":
         stop = 1
@@ -72,19 +65,27 @@ def keyboard_callback(data):
         calibration_needed = True
 
 
-
-
 def communicator():
     global anr1, anr2, anr3, anr4, turn, stop, calibration_needed
     rospy.init_node('nkr_driver_communication', anonymous=True)
     rospy.Subscriber('keyboard_commands', String, keyboard_callback)
+    odo_pub = rospy.Publisher('motors_data', motors, queue_size=1)
     rate = rospy.Rate(8)
 
     while not rospy.is_shutdown():
         ser.write("[drv] {} {} {} {} {} {}\n".format(anr1, anr2, anr3, anr4, turn, int(stop)))
-        #print('[drv] {} {} {} {} {} {}\n'.format(anr1, anr2, anr3, anr4, turn, int(stop)))
-        #print(ser.readline())
-        print(ser.readline())
+        incLine = ser.readline()
+        arr = incline.split(' ')
+        if (arr[0] == "[enc]"):
+            msg = motors()
+            msg.timestamp = rospy.Time.now()
+            msg.odo[0] = float(arr[1])
+            msg.odo[1] = float(arr[2])
+            msg.odoRear[0] = float(arr[3])
+            msg.odoRear[1] = float(arr[4])
+            msg.angleFront = float(arr[5])
+            msg.angleRear = float(arr[6])
+            odo_pub.publish(msg)
 
         if calibration_needed:
             print('sending rotation angles calibration command\n')
