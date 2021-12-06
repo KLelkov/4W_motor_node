@@ -70,13 +70,16 @@ def communicator():
     rospy.init_node('nkr_driver_communication', anonymous=True)
     rospy.Subscriber('keyboard_commands', String, keyboard_callback)
     odo_pub = rospy.Publisher('motors_data', motors, queue_size=3)
-    rate = rospy.Rate(15)
-
+    rate = rospy.Rate(20)
+    count = 0
     while not rospy.is_shutdown():
-        ser.write("[drv] {} {} {} {} {} {}\n".format(anr1, anr2, anr3, anr4, turn, int(stop)))
+        if count % 2 == 0:
+            ser.write("[drv] {} {} {} {} {} {}\n".format(anr1, anr2, anr3, anr4, turn, int(stop)))
+        count += 1
         incLine = ser.readline()
         arr = incLine.split(' ')
         if (arr[0] == "[enc]"):
+            #print(incLine)
             msg = motors()
             #msg.timestamp = rospy.Time.now()
             msg.odo[0] = float(arr[1])
