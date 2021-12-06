@@ -70,7 +70,7 @@ def communicator():
     rospy.init_node('nkr_driver_communication', anonymous=True)
     rospy.Subscriber('keyboard_commands', String, keyboard_callback)
     odo_pub = rospy.Publisher('motors_data', motors, queue_size=3)
-    rate = rospy.Rate(8)
+    rate = rospy.Rate(15)
 
     while not rospy.is_shutdown():
         ser.write("[drv] {} {} {} {} {} {}\n".format(anr1, anr2, anr3, anr4, turn, int(stop)))
