@@ -24,10 +24,46 @@ turn = 0
 calibration_needed = False
 stop = 0
 
+rw = 0.254/2
+lf = 0.4 # forward len
+lr = 0.45 # rear len
+lw = 0.625 # wheel base (full distsnce between wheels)
+
 
 def rps2duty(radpersec):
-    duty_cycle = -0.000216 * radpersec**3 + 0.01554 * radpersec**2 + 1.8424 * radpersec + 4.0242
+    duty_cycle = math.copysign(-0.000216 * abs(radpersec)**3 + 0.01554 * radpersec**2 + 1.8424 * abs(radpersec) + 4.0242, radpersec)
+    if abs(duty_cycle) < 8:
+        duty_cycle = 0
+    elif abs(duty_cycle) > 80:
+        duty_cycle = math.copysign(80, duty_cycle)
     return int(round(duty_cycle))
+
+
+def velocity2commands(velocity, rate):
+    if velocity == 0: # cant turn on place (without moving forward)
+        gamma = 0
+    else:
+        tan_gamma = rate * (lf + lr) / abs(velocity) / 2
+        gamma = math.atan(tan_gamma) * 180.0 / math.pi
+        if abs(gamma) > 30:
+            gamma = math.copysign(30, gamma)
+    if  rate == 0:
+        duty1 = rps2duty(velocity / rw)
+        duty2 = rps2duty(velocity / rw)
+        duty3 = rps2duty(velocity / rw)
+        duty4 = rps2duty(velocity / rw)
+    else: # if turning - velocities of the outer wheels should be higher
+        Rc = abs(velocity / rate)
+        vel1 = abs(rate) * math.sqrt( lf**2 + (Rc + math.copysign(lw/2, rate))**2 ) * math.copysign(1, velocity)
+        vel2 = abs(rate) * math.sqrt( lf**2 + (Rc - math.copysign(lw/2, rate))**2 ) * math.copysign(1, velocity)
+        vel3 = abs(rate) * math.sqrt( lr**2 + (Rc + math.copysign(lw/2, rate))**2 ) * math.copysign(1, velocity)
+        vel4 = abs(rate) * math.sqrt( lr**2 + (Rc - math.copysign(lw/2, rate))**2 ) * math.copysign(1, velocity)
+        duty1 = rps2duty(vel1 / rw)
+        duty2 = rps2duty(vel2 / rw)
+        duty3 = rps2duty(vel3 / rw)
+        duty4 = rps2duty(vel4 / rw)
+    return (duty1, duty2, duty3, duty4, round(gamma))
+
 
 def keyboard_callback(data):
     global anr1, anr2, anr3, anr4, turn, stop, calibration_needed
