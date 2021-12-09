@@ -24,6 +24,11 @@ turn = 0
 calibration_needed = False
 stop = 0
 
+
+def rps2duty(radpersec):
+    duty_cycle = -0.000216 * radpersec**3 + 0.01554 * radpersec**2 + 1.8424 * radpersec + 4.0242
+    return int(round(duty_cycle))
+
 def keyboard_callback(data):
     global anr1, anr2, anr3, anr4, turn, stop, calibration_needed
     if data.data=="f":
