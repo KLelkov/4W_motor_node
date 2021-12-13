@@ -6,6 +6,7 @@ import time
 import serial # used to exchange data with arduino controller
 from std_msgs.msg import String
 from rdk_msgs.msg import motors
+from rdk_msgs.msg import control
 
 
 ser = serial.Serial(
@@ -23,6 +24,13 @@ anr4 = 0
 turn = 0
 calibration_needed = False
 stop = 0
+block = 0
+
+anr1a = 0
+anr2a = 0
+anr3a = 0
+anr4a = 0
+turna = 0
 
 rw = 0.254/2
 lf = 0.4 # forward len
@@ -66,16 +74,22 @@ def velocity2commands(velocity, rate):
 
 
 def keyboard_callback(data):
-    global anr1, anr2, anr3, anr4, turn, stop, calibration_needed
+    global anr1, anr2, anr3, anr4, turn, stop, calibration_needed, block
+    if data.data == "block":
+        block = abs(int(block - 1))
+        if block == 1:
+            print("manual control mode enabled.")
+        else:
+            print("Automatic control mode!")
     if data.data=="f":
-        if anr1 <100:
+        if anr1 <75:
             stop = 0
             anr1 = anr1+5
             anr2 = anr2+5
             anr3 = anr3+5
             anr4 = anr4+5
     if data.data=="b":
-        if anr1>-100:
+        if anr1>-75:
             stop = 0
             anr1 = anr1-5
             anr2 = anr2-5
@@ -106,23 +120,35 @@ def keyboard_callback(data):
         calibration_needed = True
 
 
+def keyboard_callback(data):
+    global anr1a, anr2a, anr3a, anr4a, turna
+    time_diff = rospy.get_time() * 1000 - data.timestamp
+    if abs(time_diff) < 1000:
+        anr1a, anr2a, anr3a, anr4a, turna = velocity2commands(data.ups, data.dth)
+        #ser.write("[drv] {} {} {} {} {} {}\n".format(w1, w2, w3, w4, gamma, 0))
+
+
 def communicator():
-    global anr1, anr2, anr3, anr4, turn, stop, calibration_needed
+    global anr1, anr2, anr3, anr4, turn, stop, calibration_needed, block, anr1a, anr2a, anr3a, anr4a, turna
     rospy.init_node('nkr_driver_communication', anonymous=True)
     rospy.Subscriber('keyboard_commands', String, keyboard_callback)
+    rospy.Subscriber('control_commands', control, control_callback)
     odo_pub = rospy.Publisher('motors_data', motors, queue_size=3)
     rate = rospy.Rate(20)
     count = 0
     while not rospy.is_shutdown():
         if count % 2 == 0:
-            ser.write("[drv] {} {} {} {} {} {}\n".format(anr1, anr2, anr3, anr4, turn, int(stop)))
+            if block == 1:
+                ser.write("[drv] {} {} {} {} {} {}\n".format(anr1, anr2, anr3, anr4, turn, int(stop)))
+            else:
+                ser.write("[drv] {} {} {} {} {} {}\n".format(anr1a, anr2a, anr3a, anr4a, turna, 0))
         count += 1
         incLine = ser.readline()
         arr = incLine.split(' ')
         if (arr[0] == "[enc]"):
             #print(incLine)
             msg = motors()
-            #msg.timestamp = rospy.Time.now()
+            msg.timestamp = rospy.get_time() * 1000
             msg.odo[0] = float(arr[1])
             msg.odo[1] = float(arr[2])
             msg.odoRear[0] = float(arr[3])
