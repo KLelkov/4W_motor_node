@@ -120,7 +120,7 @@ def keyboard_callback(data):
         calibration_needed = True
 
 
-def keyboard_callback(data):
+def control_callback(data):
     global anr1a, anr2a, anr3a, anr4a, turna
     time_diff = rospy.get_time() * 1000 - data.timestamp
     if abs(time_diff) < 1000:
