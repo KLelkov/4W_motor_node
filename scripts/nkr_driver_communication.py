@@ -49,7 +49,11 @@ def rps2duty(radpersec):
 
 def velocity2commands(velocity, rate):
     if velocity == 0: # cant turn on place (without moving forward)
-        gamma = 0
+        if rate ~= 0:
+            gamma = math.copysign(25, rate)
+            return (8, 8, 8, 8, round(gamma))
+        else:
+            return (0, 0, 0, 0, 0)
     else:
         tan_gamma = rate * (lf + lr) / abs(velocity) / 2
         gamma = math.atan(tan_gamma) * 180.0 / math.pi
