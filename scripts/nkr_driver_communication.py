@@ -24,7 +24,7 @@ anr4 = 0
 turn = 0
 calibration_needed = False
 stop = 0
-block = 0
+block = 1
 
 anr1a = 0
 anr2a = 0
