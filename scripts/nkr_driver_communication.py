@@ -150,7 +150,8 @@ def communicator():
         incLine = ser.readline()
         arr = incLine.split(' ')
         if (arr[0] == "[enc]"):
-            #print(incLine)
+            if count % 50 == 0:
+                print(incLine)
             msg = motors()
             msg.timestamp = rospy.get_time() * 1000
             msg.odo[0] = float(arr[1])
