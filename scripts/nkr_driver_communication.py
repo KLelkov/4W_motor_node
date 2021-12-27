@@ -51,7 +51,7 @@ def velocity2commands(velocity, rate):
     if velocity == 0: # cant turn on place (without moving forward)
         if rate != 0:
             gamma = math.copysign(25, rate)
-            return (8, 8, 8, 8, round(gamma))
+            return (11, 11, 11, 11, round(gamma))
         else:
             return (0, 0, 0, 0, 0)
     else:
