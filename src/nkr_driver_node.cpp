@@ -37,7 +37,7 @@ public:
     {
       char portname[] = "/dev/ttyUSB0";
       ser.Open(portname, 115200);
-      ser.Flush();
+      //ser.Flush();
       //keyboardSub = n_.subscribe("keyboard_commands", 1, &SubscribeAndPublish::keyboard_callback, this);
       //controlSub = n_.subscribe("control_commands", 1, &SubscribeAndPublish::control_callback, this);
       //odoPub = n_.advertise<rdk_msgs::motos>("motors_data", 2);
@@ -60,6 +60,7 @@ public:
       sprintf(MSG, "[drv] %d %d %d %d %d %d\n", controlFrontLeft, controlFrontRight, controlRearLeft, controlRearRight, controlAngle, controlBlock);
       // TODO: find a secure way to build (unsigned char) string instead
       // of converting a (char) one.
+      ser.FlushTransmit();
       ser.Send((unsigned char*)MSG, sizeof(MSG));
       std::cout << "Sent: " << (unsigned char*)MSG << std::endl;
 
@@ -81,7 +82,7 @@ public:
 
         // Publish odometry...
 
-        //ser.Flush();
+        ser.FlushReceive();
     }
 
 
@@ -101,7 +102,7 @@ int main(int argc, char** argv)
     while (true)
     {
       // sendControl() should flush uart transmit before sending data
-      //SAPObject.sendControl();
+      SAPObject.sendControl();
       SAPObject.readOdometry();
 
       // readOdometry() should flush uart receive upon completion
