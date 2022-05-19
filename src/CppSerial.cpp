@@ -153,6 +153,16 @@ public:
     return;
   }
 
+  void SendSigned(char* buffer, int size) {
+    if (tty_fid == -1)
+    {
+      printf("Please use .Open() to open the UART before attempting to send data\n");
+      return;
+    }
+    write(tty_fid, buffer, size);
+    return;
+  }
+
   void SendBinary() {
     if (tty_fid == -1)
     {
