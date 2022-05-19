@@ -8,6 +8,7 @@
 #include <rdk_msgs/motors.h>
 #include <std_msgs/String.h>
 #include "CppSerial.cpp"
+#include <ros/master.h>
 
 
 class SubscribeAndPublish
@@ -237,7 +238,7 @@ public:
       ser.FlushTransmit();
       ser.Send((unsigned char*)MSG, sizeof(MSG));
       //ser.SendSigned(MSG, sizeof(MSG));
-      std::cout << "Sent: " << MSG << std::endl;
+      //std::cout << "Sent: " << MSG << std::endl;
 
       if (calibrationNeeded)
       {
@@ -253,7 +254,7 @@ public:
     {
         memset(read_buffer, 0, sizeof(read_buffer));
         int len = ser.ReadLine(read_buffer);
-        std::cout << "Received: " << read_buffer << std::endl;
+        //std::cout << "Received: " << read_buffer << std::endl;
         // Parse the data...
         char cmd_buf[100] = {'\0'};
         strcpy(cmd_buf, (char *) read_buffer);
@@ -290,16 +291,22 @@ int main(int argc, char** argv)
     SubscribeAndPublish SAPObject;
 
     // For cycling operation use
-    ros::Rate rate(1); // ROS Rate at 20 Hz
-    //while (ros::ok())
-    while(!ros::isShuttingDown())
+    ros::Rate rate(20); // ROS Rate at 20 Hz
+    bool master_is_alive = true;
+    while (ros::ok() && master_is_alive)
     {
-      printf("deb: %d\n", ros::ok());
+      //printf("deb: %d\n", ros::master::check());
       // sendControl() should flush uart transmit before sending data
       SAPObject.sendControl();
       SAPObject.readOdometry();
 
       // readOdometry() should flush uart receive upon completion
+
+      if (!ros::master::check())
+      {
+        ROS_WARN_THROTTLE(5, "ROS Master is not found, shutting down...");
+        master_is_alive = false;
+      }
 
      ros::spinOnce();
      rate.sleep();
