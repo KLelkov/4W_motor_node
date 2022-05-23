@@ -92,10 +92,10 @@ public:
           if (msg.dth != 0)  // Fastest turn
           {
             int signum = (msg.dth > 0) - (msg.dth < 0);
-            a_controlFrontLeft = 11;
-            a_controlFrontRight = 11;
-            a_controlRearLeft = 11;
-            a_controlRearRight = 11;
+            a_controlFrontLeft = 15;
+            a_controlFrontRight = 15;
+            a_controlRearLeft = 15;
+            a_controlRearRight = 15;
             a_controlAngle = 25 * signum;
             return;
           }
