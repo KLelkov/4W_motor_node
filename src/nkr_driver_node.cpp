@@ -9,6 +9,8 @@
 #include <std_msgs/String.h>
 #include "CppSerial.cpp"
 #include <ros/master.h>
+#include <string.h>
+#include <sstream>
 
 
 class SubscribeAndPublish
@@ -236,7 +238,8 @@ public:
       // TODO: find a secure way to build (unsigned char) string instead
       // of converting a (char) one.
       ser.FlushTransmit();
-      ser.Send((unsigned char*)MSG, sizeof(MSG));
+      std::string das = std::string(MSG);
+      ser.SendString(das);
       //ser.SendSigned(MSG, sizeof(MSG));
       //std::cout << "Sent: " << MSG << std::endl;
 
@@ -245,7 +248,8 @@ public:
         std::cout << "Axis calibration in process..." << std::endl;
         usleep(1000000);
         unsigned char calmsg[] = "[cal] \n";
-        ser.Send(calmsg, sizeof(calmsg));
+        std::string das = std::string(MSG);
+        ser.SendString(das);
         calibrationNeeded = false;
       }
     }
@@ -277,7 +281,7 @@ public:
           odoPub.publish(msg);
         }
 
-        ser.FlushReceive();
+        //ser.FlushReceive();
     }
 
 

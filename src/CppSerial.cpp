@@ -1,11 +1,13 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>  	// String function definitions
 #include <unistd.h>
 #include <fcntl.h>
 #include <termios.h>
 #include <errno.h>
 #include <sys/ioctl.h>
+#include <sstream>
 
 
 class CppSerial
@@ -150,6 +152,17 @@ public:
       return;
     }
     write(tty_fid, buffer, size);
+    return;
+  }
+
+  // OKAY, so this is the only reliable method to sedn string messages at the moment...
+  void SendString(std::string& data) {
+    if (tty_fid == -1)
+    {
+      printf("Please use .Open() to open the UART before attempting to send data\n");
+      return;
+    }
+    int writeResult = write(tty_fid, data.c_str(), data.size());
     return;
   }
 
