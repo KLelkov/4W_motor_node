@@ -109,7 +109,7 @@ public:
     int index = 0;
     while (read(tty_fid, &ch, 1) > 0)
     {
-      printf("%c", ch);// ch << std::endl;
+      //printf("%c", ch);// ch << std::endl;
       if (ch == '\r')
       {
         break;

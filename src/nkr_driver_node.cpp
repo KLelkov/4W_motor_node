@@ -48,7 +48,7 @@ private:
 public:
     SubscribeAndPublish() // This is the constructor
     {
-      char portname[] = "/dev/ttyUSB0";
+      char portname[] = "/dev/stm";
       ser.Open(portname, 115200);
 
       odoPub = nh.advertise<rdk_msgs::motors>("motors_data", 2);
@@ -291,8 +291,9 @@ int main(int argc, char** argv)
     SubscribeAndPublish SAPObject;
 
     // For cycling operation use
-    ros::Rate rate(20); // ROS Rate at 20 Hz
+    ros::Rate rate(15); // ROS Rate at 20 Hz
     bool master_is_alive = true;
+    printf("\nNKR cpp driver is ready!\n\n");
     while (ros::ok() && master_is_alive)
     {
       //printf("deb: %d\n", ros::master::check());

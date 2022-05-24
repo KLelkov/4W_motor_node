@@ -10,7 +10,7 @@ from rdk_msgs.msg import control
 
 
 ser = serial.Serial(
-	port='/dev/ttyUSB0',
+	port='/dev/stm',
 	baudrate = 115200,
 	parity = serial.PARITY_NONE,
 	stopbits = serial.STOPBITS_ONE,
