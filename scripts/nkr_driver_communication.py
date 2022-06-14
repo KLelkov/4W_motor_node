@@ -55,7 +55,8 @@ def velocity2commands(velocity, rate):
         else:
             return (0, 0, 0, 0, 0)
     else:
-        tan_gamma = rate * (lf + lr) / abs(velocity) / 2
+        tan_gamma = rate * (lf + lr) / abs(velocity) / 1
+        # tan_gamma = rate * (lf + lr) / abs(velocity) / 2
         gamma = math.atan(tan_gamma) * 180.0 / math.pi
         if abs(gamma) > 30:
             gamma = math.copysign(30, gamma)
@@ -86,7 +87,7 @@ def keyboard_callback(data):
         else:
             print("Automatic control mode!")
     if data.data=="f":
-        if anr1 <75:
+        if anr1 < 75:
             stop = 0
             anr1 = anr1+5
             anr2 = anr2+5
@@ -159,7 +160,8 @@ def communicator():
             msg.odoRear[0] = float(arr[3])
             msg.odoRear[1] = float(arr[4])
             msg.angleFront = float(arr[5])
-            msg.angleRear = float(arr[6])
+            #msg.angleRear = float(arr[6])
+            msg.angleRear = 0
             odo_pub.publish(msg)
 
         if calibration_needed:
